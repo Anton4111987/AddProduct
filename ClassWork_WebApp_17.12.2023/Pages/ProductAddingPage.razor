@@ -1,0 +1,41 @@
+﻿@inject Catalog _catalog
+@page "/Add_Products"
+
+<h3>Добавление товара</h3>
+<div>
+	
+	<p>
+		Введите ID продукта:<br />
+		<input id="Id" @bind-value="product.Id" />
+	</p>
+	<p>
+		Введите название продукта:<br />
+		<input id="Name" @bind-value="product.Name" />
+	</p>
+	<p>
+		Введите цену продукта:<br />
+		<input id="Price" @bind-value="product.Price" />
+	</p>
+	
+	<button class="btn btn-primary" id="add" @onclick="AddProduct">Добавить</button>
+	<div > @text </div>
+
+</div>
+
+
+
+@code {
+
+	Product product = new();
+	string text="";
+
+	public void AddProduct()
+	{
+
+		text = $"Добавлен новый товар {product.Name}";
+		_catalog.AddProduct(product);
+		product = new();
+
+	}
+
+}

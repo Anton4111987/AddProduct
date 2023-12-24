@@ -1,0 +1,39 @@
+﻿@page "/"
+@implements IDisposable
+<PageTitle>Index</PageTitle>
+
+<h1>Привет, мир!</h1>
+
+Добро пожаловать в интернет-магазин "Товаров"
+
+<p href="" class="time">Текущее время: @_nowTime </p>
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+@code
+{
+
+    private DateTime _nowTime;
+    PeriodicTimer? _timer;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _nowTime = DateTime.Now;
+        _ = RunDateTimeLiveUpdates();
+
+    }
+    async Task RunDateTimeLiveUpdates()
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while(await _timer.WaitForNextTickAsync())
+        {
+            _nowTime = DateTime.Now;
+            StateHasChanged();
+        }
+
+    }
+    public void Dispose()
+    {
+        _timer?.Dispose(); 
+    }
+}
