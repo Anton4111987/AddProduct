@@ -7,6 +7,7 @@ namespace ClassWork_WebApp_17._12._2023.Models
 	{
 		private readonly AppDbContext _context;
 
+		
 		public InDbSQLiteCatalog(AppDbContext context)
 		{
 			_context = context;
@@ -14,7 +15,12 @@ namespace ClassWork_WebApp_17._12._2023.Models
 		public void AddProduct(Product product)
 		{
 			_context.Products.Add(product);
-			_context.SaveChanges();
+			try
+			{
+				_context.SaveChanges();
+			}
+			catch { }
+			
 		}
 
 		public IReadOnlyCollection<Product> GetProducts()
