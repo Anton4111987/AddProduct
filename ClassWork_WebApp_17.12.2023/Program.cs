@@ -10,14 +10,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddTransient<IProductRepository, InDbSQLiteCatalog>();             //      InMemoryCatalog>();                            
-
+builder.Services.AddTransient<INowTime, NowTimeInUTC>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
 	options.UseSqlite(builder.Configuration.GetConnectionString("AppDb"));
 });
 //builder.Services.AddSingleton<ICatalog> (new InJsonFileCatalog("products.json"));
-
-
 
 
 builder.Services.AddTransient<ProductService>();
