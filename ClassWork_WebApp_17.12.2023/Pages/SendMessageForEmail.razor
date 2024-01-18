@@ -1,0 +1,40 @@
+﻿@namespace ClassWork_WebApp_17._12._2023.Models
+@page "/SendMessage"
+
+<h3>Отправка email</h3>
+<div>
+
+	<p>
+		Введите email address:<br />
+		<input id="Email" @bind-value="message.Email" />
+	</p>
+
+	<p>
+		Введите тему письма:<br />
+		<input id="Email" @bind-value="message.Subject" />
+	</p>
+
+	<p>
+		Введите текст сообщения:<br />
+		<textarea id="Message" @bind="message.StringMessage" />
+	</p>
+	
+	<button class="btn btn-primary" id="Send" @onclick="Send">Отправить</button>
+	<div> @dispatchReport </div>
+
+</div>
+
+
+@code {
+
+	Message message = new();
+	SendMessage sendMessage = new ();
+	string? dispatchReport;
+	public void Send()
+	{
+		sendMessage.SendEmail(message);	
+		dispatchReport = $"Сообщение {message.Subject} успешно отправлено";
+		message = new();
+	}
+
+}

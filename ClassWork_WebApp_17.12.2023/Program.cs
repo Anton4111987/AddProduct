@@ -1,16 +1,24 @@
 using ClassWork_WebApp_17._12._2023.Data;
-using ClassWork_WebApp_17._12._2023;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using ClassWork_WebApp_17._12._2023.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddTransient<IProductRepository, InDbSQLiteCatalog>();             //      InMemoryCatalog>();                            
+builder.Services.AddTransient<INowTime, NowTimeInUTC>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+	options.UseSqlite(builder.Configuration.GetConnectionString("AppDb"));
+});
+//builder.Services.AddSingleton<ICatalog> (new InJsonFileCatalog("products.json"));
 
-builder.Services.AddSingleton<Catalog>();
 
+builder.Services.AddTransient<ProductService>();
 
 var app = builder.Build();
 

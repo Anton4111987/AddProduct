@@ -1,4 +1,6 @@
-﻿@inject Catalog _catalog
+﻿@namespace ClassWork_WebApp_17._12._2023.Models
+@inject IProductRepository _catalog
+@* @inject AppDbContext db *@
 @page "/Add_Products"
 
 <h3>Добавление товара</h3>
@@ -31,11 +33,10 @@
 
 	public void AddProduct()
 	{
-
 		text = $"Добавлен новый товар {product.Name}";
 		_catalog.AddProduct(product);
 		product = new();
-
+		
 	}
 
 }
