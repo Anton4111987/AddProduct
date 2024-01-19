@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>ClassWork_WebApp_17._12._2023</RootNamespace>
+    <UserSecretsId>25863cb3-1d9e-4f23-b45f-d1baa0df6802</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

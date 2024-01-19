@@ -1,8 +1,9 @@
 ﻿using System.Text.Json;
+using ClassWork_WebApp_17._12._2023.Data;
 namespace ClassWork_WebApp_17._12._2023.Models
-{ 
+{
 
-	public class InJsonFileCatalog:IProductRepository
+   /* public class InJsonFileCatalog:IProductRepository
 	{
 		private readonly string filePath;
 
@@ -35,5 +36,5 @@ namespace ClassWork_WebApp_17._12._2023.Models
 
 
 
-	}
+	}*/
 }
