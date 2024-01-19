@@ -1,23 +1,33 @@
 ﻿@namespace ClassWork_WebApp_17._12._2023.Models
 @page "/products"
-@* @inject ProductService _catalog  *@
 @inject IProductRepository _catalog 
 
 <h3>Список товаров</h3>
-@foreach(var product in _catalog.GetProducts())
+@if (_products == null)
 {
-	<p> id продукта: @product.Id </p>
-    <p>Название продукта: @product.Name</p>
-    <p> Цена продукта: @product.Price</p>
-	<br>
-		
+	<p>Загрузка...</p>
+}
+else if (_products.Count == 0)
+{
+	<p>Нет товаров</p>
+}
+else
+{
+	<p>Всего товаров: @_products.Count</p>
+	@foreach (var product in _products)
+	{
+		<p>id продукта:  @product.Id </p>
+		<p>Название продукта:  @product.Name </p>
+		<p>Цена продукта:  @product.Price </p>
+		<br>
+	}
 }
 
+@code {
+	private IReadOnlyCollection<Product>? _products;
 
-
-@code 
-{
-	
-		//Catalog _catalog = new Catalog();
-
+	protected override async Task OnInitializedAsync()
+	{
+		_products = await _catalog.GetProducts();
+	}
 }

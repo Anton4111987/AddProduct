@@ -1,7 +1,11 @@
-﻿namespace ClassWork_WebApp_17._12._2023.Models
+﻿using ClassWork_WebApp_17._12._2023.Data;
+using ClassWork_WebApp_17._12._2023.Services;
+using System.Collections.Generic;
+
+namespace ClassWork_WebApp_17._12._2023.Models
 {
-	
-	public class ProductService
+
+    public class ProductService
 	{
 		private readonly IProductRepository _productRepository;
 		private readonly INowTime nowTime;
@@ -10,7 +14,7 @@
         {
 			_productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
 			nowTime = new NowTimeInUTC();
-			discountDay = DayOfWeek.Sunday; // присвоение дня скидки
+			discountDay = DayOfWeek.Tuesday; // присвоение дня скидки
 		}
 
 		public IReadOnlyCollection<Product> GetProducts() 
@@ -18,9 +22,10 @@
 			// По воскресеньям к товарам должна применяться скидка 10%
 			if (nowTime.DayOfWeek == discountDay)
 			{
-				var products = _productRepository.GetProducts();
-				var newProducts = new List<Product>(products.Count);
-				foreach (var product in products) 
+				
+				var prod=  _productRepository.GetProducts().Result;
+				var newProducts = new List<Product>(prod);
+				foreach (var product in prod) 
 				{
 					var newProduct = new Product()
 					{
@@ -36,7 +41,7 @@
 			}
 			else
 			{
-				return _productRepository.GetProducts();
+				return _productRepository.GetProducts().Result;
 			}
 			
 		

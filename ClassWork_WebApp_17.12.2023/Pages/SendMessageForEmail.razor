@@ -1,40 +1,54 @@
-﻿@namespace ClassWork_WebApp_17._12._2023.Models
+﻿@using ClassWork_WebApp_17._12._2023.Models
+@namespace ClassWork_WebApp_17._12._2023.Services
+@inject IEmailSender sendMessage
 @page "/SendMessage"
+
 
 <h3>Отправка email</h3>
 <div>
 
 	<p>
 		Введите email address:<br />
-		<input id="Email" @bind-value="message.Email" />
+		<input id="Email" @bind-value="sendEmailDataModel.Email" />
 	</p>
 
 	<p>
 		Введите тему письма:<br />
-		<input id="Email" @bind-value="message.Subject" />
+		<input id="Email" @bind-value="sendEmailDataModel.Subject" />
 	</p>
 
 	<p>
 		Введите текст сообщения:<br />
-		<textarea id="Message" @bind="message.StringMessage" />
+		<textarea id="Message" @bind="sendEmailDataModel.StringMessage" />
 	</p>
 	
 	<button class="btn btn-primary" id="Send" @onclick="Send">Отправить</button>
+	<button class="btn btn-primary" id="Send" @onclick="SendWithParam">Отправить письмо с параметрами</button>
 	<div> @dispatchReport </div>
-
+	
+	
 </div>
 
 
 @code {
 
-	Message message = new();
-	SendMessage sendMessage = new ();
-	string? dispatchReport;
-	public void Send()
+	SendEmailDataModel sendEmailDataModel = new();
+	SendEmailDataModel sendEmailDataModelWithPArams = new(){
+															Email = "laant@mail.ru",
+															Subject="Новая тема с параметрами",
+															StringMessage="Новое сообщение с параметрами"};
+	string? dispatchReport; // обратная связь о том что письмо отправлено
+	public async Task Send()
 	{
-		sendMessage.SendEmail(message);	
-		dispatchReport = $"Сообщение {message.Subject} успешно отправлено";
-		message = new();
+		await sendMessage.SendEmail(sendEmailDataModel);	
+		dispatchReport = $"Сообщение '{sendEmailDataModel.Subject}' успешно отправлено";
+		sendEmailDataModel = new();
+	}
+	public async Task SendWithParam()
+	{
+		await sendMessage.SendEmail(sendEmailDataModelWithPArams);
+		dispatchReport = $"Сообщение '{sendEmailDataModelWithPArams.Subject}' успешно отправлено";
+		sendEmailDataModel = new();
 	}
 
 }

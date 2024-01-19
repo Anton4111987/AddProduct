@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using ClassWork_WebApp_17._12._2023.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClassWork_WebApp_17._12._2023.Models
 {
-
-	public class InMemoryCatalog : IProductRepository
+/*
+    public class InMemoryCatalog : IProductRepository
 	{
 		
 		private readonly List<Product> _products = new()
@@ -16,15 +18,15 @@ namespace ClassWork_WebApp_17._12._2023.Models
 			return _products ;
 		}
         
-		public void AddProduct(Product product)
+		public async Task AddProduct(Product product)
 		{
-			_products.Add(product);
-
+			return  _products.Add(product);
+			
 		}
 	
 
 
 	}
-
+*/
 	
 }

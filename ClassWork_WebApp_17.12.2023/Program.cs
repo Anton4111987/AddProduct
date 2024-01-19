@@ -3,19 +3,27 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using ClassWork_WebApp_17._12._2023.Models;
 using Microsoft.EntityFrameworkCore;
+using ClassWork_WebApp_17._12._2023.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddTransient<IProductRepository, InDbSQLiteCatalog>();             //      InMemoryCatalog>();                            
-builder.Services.AddTransient<INowTime, NowTimeInUTC>();
+
+builder.Services.AddOptions<SmtpConfig>()
+	.BindConfiguration("SmtpConfig")
+	.ValidateDataAnnotations()
+	.ValidateOnStart();
+builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+
+builder.Services.AddScoped<IProductRepository, InDbSQLiteCatalog>();             //      InMemoryCatalog>();                            
+builder.Services.AddSingleton<INowTime, NowTimeInUTC>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
 	options.UseSqlite(builder.Configuration.GetConnectionString("AppDb"));
 });
-//builder.Services.AddSingleton<ICatalog> (new InJsonFileCatalog("products.json"));
+
 
 
 builder.Services.AddTransient<ProductService>();
