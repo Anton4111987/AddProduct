@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using ClassWork_WebApp_17._12._2023.Models;
 using Microsoft.EntityFrameworkCore;
 using ClassWork_WebApp_17._12._2023.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -11,11 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddOptions<SmtpConfig>()
+/*builder.Services.AddOptions<SmtpConfig>()
 	.BindConfiguration("SmtpConfig")
 	.ValidateDataAnnotations()
-	.ValidateOnStart();
-builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+	.ValidateOnStart();*/
+
+//builder.Host.UseSerilog((_, conf) => conf.WriteTo.Console());
+/*builder.Services.Configure<SmtpConfig>(options =>
+{
+	builder.Configuration.GetSection("SmtpConfig").Bind(options);
+});*/
+
+builder.Services.AddOptions<SmtpConfig>()
+   .BindConfiguration("SmtpConfig");
+
+builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 
 builder.Services.AddScoped<IProductRepository, InDbSQLiteCatalog>();             //      InMemoryCatalog>();                            
 builder.Services.AddSingleton<INowTime, NowTimeInUTC>();

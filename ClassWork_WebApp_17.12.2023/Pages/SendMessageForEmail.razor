@@ -1,7 +1,9 @@
-﻿@using ClassWork_WebApp_17._12._2023.Models
-@namespace ClassWork_WebApp_17._12._2023.Services
+﻿@namespace ClassWork_WebApp_17._12._2023.Services
 @inject IEmailSender sendMessage
+@inject ILogger<SendMessageForEmail> Logger
 @page "/SendMessage"
+@using ClassWork_WebApp_17._12._2023.Models
+@using MailKit
 
 
 <h3>Отправка email</h3>
@@ -33,16 +35,41 @@
 @code {
 
 	SendEmailDataModel sendEmailDataModel = new();
+	int _attemptToSend = 0; // количечтво попыток отправки
 	SendEmailDataModel sendEmailDataModelWithPArams = new(){
 															Email = "laant@mail.ru",
 															Subject="Новая тема с параметрами",
 															StringMessage="Новое сообщение с параметрами"};
 	string? dispatchReport; // обратная связь о том что письмо отправлено
-	public async Task Send()
+	private async Task Send()
 	{
-		await sendMessage.SendEmail(sendEmailDataModel);	
-		dispatchReport = $"Сообщение '{sendEmailDataModel.Subject}' успешно отправлено";
-		sendEmailDataModel = new();
+		try
+		{
+			_attemptToSend++;
+			Logger.LogInformation("Попытка отправки имейла на адрес {Email}", sendEmailDataModel.Email);
+			await sendMessage.SendEmail(sendEmailDataModel);
+			dispatchReport = $"Сообщение '{sendEmailDataModel.Subject}' успешно отправлено";
+			
+			Logger.LogInformation("Сообщение на адрес {Email} успешно отправлено", sendEmailDataModel.Email);
+			sendEmailDataModel = new();
+		}
+		catch (Exception e) when (_attemptToSend < 3
+										&& e is ServiceNotAuthenticatedException
+										or ServiceNotConnectedException
+										//...
+										)
+		{
+			Logger.LogWarning(e, "Ошибка отправки имейла на адрес {Email}. Делаем еще одну попытку", sendEmailDataModel.Email, e.Message);
+			await Send(); //retry
+		}
+		catch(Exception e)
+		{
+			// Даем разработчику явно понять, что произошла ошибка, и что нужно что-то делать.
+			Logger.LogError(e, "Ошибка отправки имейла на адрес {Email}. Ошибка: {Error}", sendEmailDataModel.Email, e.Message);
+			dispatchReport = "Ошибка отправки письма";
+		}
+
+		
 	}
 	public async Task SendWithParam()
 	{
