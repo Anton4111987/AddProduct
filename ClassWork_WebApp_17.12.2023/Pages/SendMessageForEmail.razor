@@ -1,8 +1,9 @@
 ﻿@using ClassWork_WebApp_17._12._2023.Models
+@using MailKit
 @namespace ClassWork_WebApp_17._12._2023.Services
 @inject IEmailSender sendMessage
 @page "/SendMessage"
-
+@inject ILogger<SendMessageForEmail> Logger
 
 <h3>Отправка email</h3>
 <div>
@@ -21,28 +22,50 @@
 		Введите текст сообщения:<br />
 		<textarea id="Message" @bind="sendEmailDataModel.StringMessage" />
 	</p>
-	
+
 	<button class="btn btn-primary" id="Send" @onclick="Send">Отправить</button>
 	<button class="btn btn-primary" id="Send" @onclick="SendWithParam">Отправить письмо с параметрами</button>
 	<div> @dispatchReport </div>
-	
-	
+
+
 </div>
 
 
 @code {
 
 	SendEmailDataModel sendEmailDataModel = new();
-	SendEmailDataModel sendEmailDataModelWithPArams = new(){
-															Email = "laant@mail.ru",
-															Subject="Новая тема с параметрами",
-															StringMessage="Новое сообщение с параметрами"};
+	int _attemptToSend = 0;
+	SendEmailDataModel sendEmailDataModelWithPArams = new()
+		{
+			Email = "laant@mail.ru",
+			Subject = "Новая тема с параметрами",
+			StringMessage = "Новое сообщение с параметрами"
+		};
+
 	string? dispatchReport; // обратная связь о том что письмо отправлено
 	public async Task Send()
 	{
-		await sendMessage.SendEmail(sendEmailDataModel);	
-		dispatchReport = $"Сообщение '{sendEmailDataModel.Subject}' успешно отправлено";
-		sendEmailDataModel = new();
+		_attemptToSend++;
+		Logger.LogInformation("Попытка отправки имейла на адрес {Email}", sendEmailDataModel.Email);
+		try
+		{
+			await sendMessage.SendEmail(sendEmailDataModel);
+			dispatchReport = $"Сообщение '{sendEmailDataModel.Subject}' успешно отправлено";
+			Logger.LogInformation("Отправка имейла на адрес {Email} успешно выполнена", sendEmailDataModel.Email);
+			sendEmailDataModel = new();
+		}
+		catch (Exception e) when (_attemptToSend < 3
+							&& e is ServiceNotAuthenticatedException
+							or ServiceNotConnectedException)
+		{
+			Logger.LogWarning(e, "Ошибка отправки емейла на адрес {Email}. Делаем еще 3 попытки", sendEmailDataModel.Email);
+			await Send();
+		}
+		catch (Exception e)
+		{
+			Logger.LogCritical(e, "Ошибка отправки емейла на адрес {Email}. Ошибка: {Error}", sendEmailDataModel.Email, e.Message);
+			dispatchReport = "Ошибка отправки письма ";
+		}
 	}
 	public async Task SendWithParam()
 	{
